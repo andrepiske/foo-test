@@ -4,6 +4,8 @@ class PeterpansController < ApplicationController
   end
 
   def show
+    Rails.logger.info("Hey, looks those params: #{params.inspect}")
+
     render json: { key: 'pan!' }
   end
 

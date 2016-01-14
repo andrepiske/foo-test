@@ -9,6 +9,9 @@ Rails.application.routes.draw do
 
   resources :peterpans do
     get :root
+    member do
+      post :show
+    end
   end
 
   # Example of regular route:
