@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :peterpans do
     get :root
     member do
+      get :show
       post :show
     end
   end

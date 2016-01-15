@@ -4,7 +4,10 @@ class PeterpansController < ApplicationController
   end
 
   def show
-    Rails.logger.info("Hey, looks those params: #{params.inspect}")
+    hl = HookLog.new(the_params: "Hey, looks those params: #{params.inspect}")
+    hl.save!
+
+    # Rails.logger.info("Hey, looks those params: #{params.inspect}")
 
     render json: { key: 'pan!' }
   end
