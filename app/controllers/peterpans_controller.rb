@@ -1,6 +1,8 @@
 require 'httparty'
 
 class PeterpansController < ApplicationController
+  include HTTParty
+
   def index
     render json: { 'hey' => 4 }
   end
@@ -9,9 +11,8 @@ class PeterpansController < ApplicationController
     hl = HookLog.new(the_params: params.to_json)
     hl.save!
 
-    # Rails.logger.info("Hey, looks those params: #{params.inspect}")
-
     send_to_slack(hl.id)
+    send_to_github_issues('alebruck')
     head status: :no_content
   end
 
@@ -32,6 +33,21 @@ class PeterpansController < ApplicationController
           'Content-Type' => 'application/x-www-form-urlencoded',
           'User-Agent' => 'Zordon'
         })
+    end
+  end
+
+  #TODO: use gem retryable
+  def send_to_github_issues(assignee)
+    return unless ENV['GITHUB_KEY'].present? && ENV['GITHUB_URL'].present?
+    Thread.new do
+      HTTParty.post( ENV['GITHUB_URL'], 
+        :body => { title: 'An Model file was edited', 
+                   body: 'Please update the api', 
+                   assignee: assignee }.to_json,
+        :headers => { 'Authorization' => "token #{ENV['GITHUB_KEY']}",
+                      'X-GitHub-Media-Type' => 'github.v3',
+                      'Content-Type' => 'application/json',
+                      'User-Agent' => 'Zordon'})
     end
   end
 
